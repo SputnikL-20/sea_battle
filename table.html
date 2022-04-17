@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        table{
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        th, td{
+			width: 15px;
+			height: 15px;
+			font-size: 80%;
+            padding: 1px 1px 1px 1px;
+			margin: 1px 1px 1px 1px;
+            border: 1px solid #000;
+			cursor: crosshair;
+        }
+    </style>
+    <script type="text/javascript">
+
+	function twoThreeShip(map_ship) {
+
+		do {
+
+			var x = 0;
+			var two_ship = [];
+			var count = 0;
+			x = mapShipRandom();
+
+			var two_ver_left = ['00', '10', '20', '30', '40', '50', '60', '70', '80', '90'];
+			if ( two_ver_left.includes(x) ) {
+				count++;
+			}
+			
+			var borders_ship_left = [-10, -9, 1, 11, 10, 9, 8, -2, -12, -11];
+			for (var i = 0; i < borders_ship_left.length; i++) {
+
+				var tmp = (Number(x) + borders_ship_left[i]);
+				if ( tmp.toString().length == 1 ) {
+				  tmp = "0" + tmp;
+				}	
+				if ( map_ship.includes( tmp.toString() ) ) {
+					count++;
+				}
+				map_ship.includes( x ) ? count++ : null;			
+				map_ship.includes( (Number(x) - 1).toString() ) ? count++ : null;
+				
+				// console.log(count);
+			}
+
+			if ( count == 0 ) {
+				var tmp = (Number(x) - 1).toString();
+				if ( tmp.toString().length == 1 ) {
+				  tmp = "0" + tmp;
+				}
+				two_ship.push(tmp);
+				two_ship.push(x);
+				// console.log(two_ship);
+				return two_ship;
+
+			} else if ( count != 0 ) {
+			
+				count = 0;			
+				var two_ver_up = ['00', '01', '02', '03', '04', '05', '06', '07', '08' ,'09'];
+				if ( two_ver_up.includes(x) ) {
+					count++;
+				}
+				
+				var borders_ship_up = [-1, -11, -21, -20, -19, -9, 1, 11, 10, 9];
+				for (var i = 0; i < borders_ship_up.length; i++) {
+
+					var tmp = (Number(x) + borders_ship_up[i]);
+					if ( tmp.toString().length == 1 ) {
+					  tmp = "0" + tmp;
+					}		
+					if ( map_ship.includes(tmp.toString()) ) {
+						count++;
+					}
+					map_ship.includes( x ) ? count++ : null;			
+					map_ship.includes( (Number(x) - 10).toString().length == 1 ? "0" + (Number(x) - 10).toString() : (Number(x) - 10).toString() ) ? count++ : null;
+					
+					// console.log(count);
+				}
+
+				if ( count == 0 ) {
+
+					var tmp = (Number(x) - 10).toString();
+					if ( tmp.toString().length == 1 ) {
+					  tmp = "0" + tmp;
+					}	
+					two_ship.push(tmp);
+					two_ship.push(x);
+					// console.log(two_ship);
+					return two_ship;
+				}
+			}
+
+		} while ( count != 0 );
+	}
+
+	function mapShipRandom() {
+
+		var x = Math.floor(Math.random() * 100);
+		if ( String(x).length == 1 ) {
+			x = "0" + x;
+		}
+		return x.toString();
+	}   	
+
+    function oneFourShip() {
+	
+		var x = 0;
+		var map_ship = [];
+		var verification = [];
+
+		for (var i = 0; i < 4; i++) { 
+			x = mapShipRandom();
+			map_ship.push(x);
+		  
+			if ( map_ship.length == 0 ) {
+				map_ship.push(x);
+			} else {
+				do {
+					var count = 0;
+					for (var v = 0; v < verification.length; v++) {
+						if ( verification[v] == map_ship[i] ) {
+							count++;
+						}
+					}
+					if ( count > 0 ) {
+						map_ship.pop();
+						map_ship.push( mapShipRandom() );
+					}
+				} while ( count != 0 ); 
+			}
+		  
+			var mas_check = [-1, -11, -10, -9, 1, 11, 10, 9];
+			for ( var j = 0; j < mas_check.length; j++) {
+				var tmp = Number(map_ship[i]) + mas_check[j];
+				if ( String(tmp).length == 1 ) {
+					tmp = "0" + tmp;
+				}       
+				verification.push(String(tmp));
+			}
+			verification.push( map_ship[i] );	
+		}
+		// console.log(map_ship);
+		return map_ship;
+    }
+
+    </script>
+</head>
+<body id="body">
+
+<div id="user">
+    <!-- <script src="script.js"></script>   -->
+	<script>
+
+		document.writeln("<table>");		
+		for (var j = 0; j < 10; j++) {
+			document.writeln("<tr>");
+			if ( j == 0 ) {
+				document.writeln("<th></th>");
+				for (var l = 0; l < 10; l++) {
+					document.writeln("<th>" + String.fromCodePoint(97 + l) + "</th>");
+				}
+				document.writeln("</tr>");
+				document.writeln("<tr>");
+			}
+			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
+			for (var i = 0; i < 10; i++) {
+				document.writeln("<td id=" + j + "" + i + "></td>");
+			}
+			document.writeln("</tr>");
+		}
+		document.writeln("</table>");
+		
+		var one_ship = oneFourShip();
+		var two_ship = [];
+
+		for ( var ship of one_ship ) {
+			document.getElementById(ship).style.background = "blue";
+		}
+
+		for (var j = 0; j < 3; j++) {
+			two_ship = twoThreeShip(one_ship);
+			for ( var tw_ship of two_ship ) {
+				document.getElementById(tw_ship).style.background = "blue";
+			}
+
+			for (var i of two_ship) {
+				one_ship.push(i);
+			} 
+			console.log(one_ship);
+		}
+
+	</script>
+</div>
+
+<div id="pc">
+	<script>
+
+		document.writeln("<table style='visibility: hidden;'>");		
+		for (var j = 0; j < 10; j++) {
+			document.writeln("<tr>");
+			if ( j == 0 ) {
+				document.writeln("<th></th>");
+				for (var l = 0; l < 10; l++) {
+					document.writeln("<th>" + String.fromCodePoint(97 + l) + "</th>");
+				}
+				document.writeln("</tr>");
+				document.writeln("<tr>");
+			}
+			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
+			for (var i = 0; i < 10; i++) {
+				document.writeln("<td id=" + j + "" + i + "cpu" + " onclick='setFire(this)'></td>");
+			}
+			document.writeln("</tr>");
+		}
+		document.writeln("</table>");
+		
+/*** cpu-x ***/		
+		document.writeln("<table>");		
+		for (var j = 0; j < 10; j++) {
+			document.writeln("<tr>");
+			if ( j == 0 ) {
+				document.writeln("<th></th>");
+				for (var l = 0; l < 10; l++) {
+					document.writeln("<th>" + String.fromCodePoint(97 + l) + "</th>");
+				}
+				document.writeln("</tr>");
+				document.writeln("<tr>");
+			}
+			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
+			for (var i = 0; i < 10; i++) {
+				document.writeln("<td id=" + j + "" + i + "cpu-x" + " onclick='setFire(this)'></td>");
+			}
+			document.writeln("</tr>");
+		}
+		document.writeln("</table>");
+/*** end cpu-x ***/
+
+		var one_ship = oneFourShip();
+		var two_ship = [];
+
+		for ( var ship of one_ship ) {
+			document.getElementById(ship + "cpu").style.background = "blue";
+			// document.getElementById(ship + "cpu").style.visibility = "hidden";
+			// document.getElementById(ship + "cpu").style.cursor = "crosshair";
+		}
+
+		for (var j = 0; j < 3; j++) {
+			two_ship = twoThreeShip(one_ship);
+			for ( var tw_ship of two_ship ) {
+				document.getElementById(tw_ship + "cpu").style.background = "blue";
+				// document.getElementById(tw_ship + "cpu").style.visibility = "hidden";
+				// document.getElementById(tw_ship + "cpu").style.cursor = "crosshair";
+			}
+
+			for (var i of two_ship) {
+				one_ship.push(i);
+			} 
+			console.log(one_ship);
+		}
+
+	</script>
+</div>	
+<div id="communication">
+	<script>
+		
+	function setFire(arg) {
+
+		var field = document.getElementById( arg.getAttribute('id') );
+		var color = document.getElementById( arg.getAttribute('id').slice(0, 5) );
+		try {
+			if (color.getAttribute('style').slice(12, 16) == "blue") {
+				// color.style.visibility = "visible";
+				field.style.backgroundColor = "red";
+				console.log("exactly");
+			}
+		} catch (e) {
+			field.style.backgroundColor = "gray";
+			document.getElementById("pc").style.pointerEvents = "none";
+			console.log("past");
+			setFireCPU();
+		}		
+	}
+	
+	function setFireCPU() {
+		
+		var fieldFire = [];
+		var k = 0;
+		var color = "";
+		// var batle_arr = [];
+
+		for (var i = 0; i < 10; i++) {
+			// batle_arr[i] = [];
+			for(var j = 0; j < 10; j++) {
+				// batle_arr[i][j] = i + "" + j;
+				color = document.getElementById( i + "" + j );
+				try {
+					if (color.getAttribute('style').slice(12, 16) == "gray" || color.getAttribute('style').slice(12, 16).trimEnd() == "red") {
+						continue; // console.log( i + "" + j );
+					}
+					if ( color.getAttribute('style').slice(12, 16) == "blue" ) {
+						fieldFire[k] = i + "" + j;
+						k++;					
+					}
+				} catch (e) {
+					fieldFire[k] = i + "" + j;
+					k++;
+				}
+			}
+		}
+		
+		console.log(fieldFire);
+		
+		do {
+			var psetField = Math.floor(Math.random() * fieldFire.length);
+			console.log("psetField = " +  fieldFire[psetField] );
+			color = document.getElementById( fieldFire[psetField] );
+			console.log("color" + color);
+			try {
+				if (color.getAttribute('style').slice(12, 16) == "blue") {
+					color.style.backgroundColor = "red";
+				}			
+			} catch (e) {
+				color.style.backgroundColor = "gray";
+			}
+			
+		} while ( color.style.backgroundColor != "gray" );
+		
+		document.getElementById("pc").style.pointerEvents = "auto";
+	}
+		
+		// console.log(batle_arr);
+	</script>
+</div>
+</body>
+</html>
