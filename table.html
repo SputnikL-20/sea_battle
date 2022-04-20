@@ -11,14 +11,23 @@
             border-collapse: collapse;
             border-spacing: 0;
         }
-        th, td{
-			width: 15px;
-			height: 15px;
+
+        th, td {
+			width: 20px;
+			height: 20px;
 			font-size: 80%;
             padding: 1px 1px 1px 1px;
 			margin: 1px 1px 1px 1px;
             border: 1px solid #000;
 			cursor: crosshair;
+        }
+        canvas{
+			font-size: 80%;
+
+			margin: 0px 5px 0px 5px;
+			/* background:gray;
+            border: none;
+			  cursor: crosshair; */
         }
     </style>
     <script type="text/javascript">
@@ -152,6 +161,18 @@
 		// console.log(map_ship);
 		return map_ship;
     }
+	
+	function drawPast( id_canvas ) {
+		var canvas = document.getElementById( id_canvas );
+		try {
+			if (canvas.getContext) {
+				var ctx = canvas.getContext('2d');
+				ctx.fillRect(2, 3, 6, 6);
+			}		
+		} catch (e) {
+			null;
+		}
+	}
 
     </script>
 </head>
@@ -174,7 +195,7 @@
 			}
 			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
 			for (var i = 0; i < 10; i++) {
-				document.writeln("<td id=" + j + "" + i + "></td>");
+				document.writeln("<td id=" + j + "" + i + "><canvas id='user_canvas" + j + "" + i + "' width='10' height='10'></canvas></td>");
 			}
 			document.writeln("</tr>");
 		}
@@ -184,13 +205,13 @@
 		var two_ship = [];
 
 		for ( var ship of one_ship ) {
-			document.getElementById(ship).style.background = "blue";
+			document.getElementById(ship).style.backgroundColor = "blue";
 		}
 
 		for (var j = 0; j < 3; j++) {
 			two_ship = twoThreeShip(one_ship);
 			for ( var tw_ship of two_ship ) {
-				document.getElementById(tw_ship).style.background = "blue";
+				document.getElementById(tw_ship).style.backgroundColor = "blue";
 			}
 
 			for (var i of two_ship) {
@@ -201,9 +222,30 @@
 
 	</script>
 </div>
-
+<br />
 <div id="pc">
 	<script>
+		
+/*** cpu-x ***/		
+		document.writeln("<table>");		
+		for (var j = 0; j < 10; j++) {
+			document.writeln("<tr>");
+			if ( j == 0 ) {
+				document.writeln("<th></th>");
+				for (var l = 0; l < 10; l++) {
+					document.writeln("<th>" + String.fromCodePoint(97 + l) + "</th>");
+				}
+				document.writeln("</tr>");
+				document.writeln("<tr>");
+			}
+			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
+			for (var i = 0; i < 10; i++) {
+				document.writeln("<td id=" + j + "" + i + "cpu-x" + " onclick='setFire(this)'><canvas id='canvas" + j + "" + i + "' width='10' height='10'></canvas></td>");
+			}
+			document.writeln("</tr>");
+		}
+		document.writeln("</table>");
+/*** end cpu-x ***/
 
 		document.writeln("<table style='visibility: hidden;'>");		
 		for (var j = 0; j < 10; j++) {
@@ -224,32 +266,13 @@
 		}
 		document.writeln("</table>");
 		
-/*** cpu-x ***/		
-		document.writeln("<table>");		
-		for (var j = 0; j < 10; j++) {
-			document.writeln("<tr>");
-			if ( j == 0 ) {
-				document.writeln("<th></th>");
-				for (var l = 0; l < 10; l++) {
-					document.writeln("<th>" + String.fromCodePoint(97 + l) + "</th>");
-				}
-				document.writeln("</tr>");
-				document.writeln("<tr>");
-			}
-			document.writeln("<td style='text-align:center;font-weight:bold;'>" + String.fromCodePoint(48 + j) + "</td>");
-			for (var i = 0; i < 10; i++) {
-				document.writeln("<td id=" + j + "" + i + "cpu-x" + " onclick='setFire(this)'></td>");
-			}
-			document.writeln("</tr>");
-		}
-		document.writeln("</table>");
-/*** end cpu-x ***/
+		
 
 		var one_ship = oneFourShip();
 		var two_ship = [];
 
 		for ( var ship of one_ship ) {
-			document.getElementById(ship + "cpu").style.background = "blue";
+			document.getElementById(ship + "cpu").style.backgroundColor = "blue";
 			// document.getElementById(ship + "cpu").style.visibility = "hidden";
 			// document.getElementById(ship + "cpu").style.cursor = "crosshair";
 		}
@@ -257,7 +280,7 @@
 		for (var j = 0; j < 3; j++) {
 			two_ship = twoThreeShip(one_ship);
 			for ( var tw_ship of two_ship ) {
-				document.getElementById(tw_ship + "cpu").style.background = "blue";
+				document.getElementById(tw_ship + "cpu").style.backgroundColor = "blue";
 				// document.getElementById(tw_ship + "cpu").style.visibility = "hidden";
 				// document.getElementById(tw_ship + "cpu").style.cursor = "crosshair";
 			}
@@ -274,19 +297,25 @@
 	<script>
 		
 	function setFire(arg) {
-
+	
+		//console.log(arg);
 		var field = document.getElementById( arg.getAttribute('id') );
+		//console.log(field.childNodes[0].getAttribute('id'));
 		var color = document.getElementById( arg.getAttribute('id').slice(0, 5) );
+		//console.log(color);
+		var id_canvas = field.childNodes[0].getAttribute('id');
+		
 		try {
-			if (color.getAttribute('style').slice(12, 16) == "blue") {
+			if (color.getAttribute('style').slice(18, 22) == "blue") {
 				// color.style.visibility = "visible";
 				field.style.backgroundColor = "red";
 				console.log("exactly");
 			}
 		} catch (e) {
-			field.style.backgroundColor = "gray";
+			// field.style.backgroundColor = "gray";
+			drawPast( id_canvas );
 			document.getElementById("pc").style.pointerEvents = "none";
-			console.log("past");
+			//console.log("past");
 			setFireCPU();
 		}		
 	}
@@ -304,10 +333,10 @@
 				// batle_arr[i][j] = i + "" + j;
 				color = document.getElementById( i + "" + j );
 				try {
-					if (color.getAttribute('style').slice(12, 16) == "gray" || color.getAttribute('style').slice(12, 16).trimEnd() == "red") {
+					if (color.getAttribute('style').slice(18, 23) == "white" || color.getAttribute('style').slice(18, 21).trimEnd() == "red") {
 						continue; // console.log( i + "" + j );
 					}
-					if ( color.getAttribute('style').slice(12, 16) == "blue" ) {
+					if ( color.getAttribute('style').slice(18, 22) == "blue" ) {
 						fieldFire[k] = i + "" + j;
 						k++;					
 					}
@@ -323,17 +352,23 @@
 		do {
 			var psetField = Math.floor(Math.random() * fieldFire.length);
 			console.log("psetField = " +  fieldFire[psetField] );
+			var id_canvas = "user_canvas" +  fieldFire[psetField];
 			color = document.getElementById( fieldFire[psetField] );
 			console.log("color" + color);
 			try {
-				if (color.getAttribute('style').slice(12, 16) == "blue") {
+				if (color.getAttribute('style').slice(18, 22) == "blue") {
 					color.style.backgroundColor = "red";
 				}			
 			} catch (e) {
-				color.style.backgroundColor = "gray";
+				//try {
+					color.style.backgroundColor = "white";
+					drawPast( id_canvas );			
+				//} catch (e) {
+				//	null;
+				//}
 			}
 			
-		} while ( color.style.backgroundColor != "gray" );
+		} while ( color.style.backgroundColor != "white" );
 		
 		document.getElementById("pc").style.pointerEvents = "auto";
 	}
