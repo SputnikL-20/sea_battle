@@ -405,7 +405,7 @@
 			text: "cpu off target",
 			theme: "secondary",
 			autohide: true,
-			interval: 3000
+			interval: 1000
 		  });
 	}
 		
