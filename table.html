@@ -181,11 +181,12 @@
 <body id="body">
 <div style="display: none;" id="use_ship"></div>	
 <div style="display: none;" id="cpu_ship"></div>
-<div id="use"></div>
-<div id="cpu"></div>
-<p><div style="display: none;" id="cpu_map_fire">[]</div></p>	
+<div style="display: none;" id="cpu_map_fire">[]</div>	
+<div id="use">
+	USE the fleet is destroyed on 0 %
+</div>
+<br />
 <div id="user">
-
 	<script>
 
 		document.writeln("<table>");		
@@ -222,18 +223,21 @@
 
 			for (var i of two_ship) {
 				use_map_ship.push(i);
-			} 
-			// console.log(use_map_ship);
+			} ;
 		}
 		document.getElementById('use_ship').innerText = window.btoa( JSON.stringify(use_map_ship) );
 		
 	</script>
 </div>
 <br />
-<div id="pc">
+<div id="cpu">
+	CPU the fleet is destroyed on 0 %
+</div>
+<br />
+<div id="pc">	
 	<script>
-		
 /*** cpu-x ***/		
+		
 		document.writeln("<table>");		
 		for (var j = 0; j < 10; j++) {
 			document.writeln("<tr>");
@@ -271,9 +275,7 @@
 			for (var i of two_ship) {
 				cpu_map_ship.push(i);
 			} 
-			// console.log(cpu_map_ship);
 		}
-			
 		document.getElementById('cpu_ship').innerText = window.btoa( JSON.stringify(cpu_map_ship) );
 		
 	</script>
@@ -282,9 +284,8 @@
 
 	<script>
 		
-		
-	// console.log(use_map_ship);
-	// console.log(cpu_map_ship);
+	console.log(use_map_ship);
+	console.log(cpu_map_ship);
 		
 	function setFire(arg) {
 	
@@ -292,120 +293,84 @@
 		var cell = document.getElementById( arg.getAttribute('id') );		
 		var fire = arg.getAttribute('id').slice(0, 2);
 		var id_canvas = cell.childNodes[0].getAttribute('id');
-		console.log("pset_on_field_cpu: " + fire);
-		
+		// console.log("pset_on_field_cpu: " + fire);
 		var cpu_ship = JSON.parse( window.atob( document.getElementById('cpu_ship').innerText ) );
 
-			if ( cpu_ship.includes( fire ) ) {
-				cpu_ship.forEach( (item, index) => {
-				  item == fire ? cpu_ship.splice( index, 1 ) : null;	  
-				  document.getElementById('cpu_ship').innerText = window.btoa( JSON.stringify( cpu_ship ) );
-				  document.getElementById('cpu').innerHTML = "CPU the fleet is destroyed on " + ((10 - cpu_ship.length) * 10) + " %";
-				});
-				
-				// color.style.visibility = "visible";
-				cell.style.backgroundColor = "red";
-				
-				// document.getElementById( fire ).onclick = () => {
-				  /*
-					title - название заголовка
-					text - текст сообщения
-					theme - тема
-					autohide - нужно ли автоматически скрыть всплывающее сообщение через interval миллисекунд interval - количество миллисекунд через которые необходимо скрыть сообщение
-				  */
-				  new Toast({
-					title: false,
-					text: "use exactly",
-					theme: "secondary",
-					autohide: true,
-					interval: 1000
-				  });
-				// }
-				console.log("use exactly");
-			} else {
-			setTimeout (  my_toast() , 3000);
-			drawPast( id_canvas );
-			document.getElementById("pc").style.pointerEvents = "none";
+		if ( cpu_ship.includes( fire ) ) {
+			cpu_ship.forEach( (item, index) => {
+			  item == fire ? cpu_ship.splice( index, 1 ) : null;	  
+			  document.getElementById('cpu_ship').innerText = window.btoa( JSON.stringify( cpu_ship ) );
+			  document.getElementById('cpu').innerHTML = "CPU the fleet is destroyed on " + ((10 - cpu_ship.length) * 10) + " %";
+			});
+
+			cell.style.backgroundColor = "red";
+			my_toast("use exactly");
 			
-				  <!-- new Toast({ -->
-					<!-- title: false, -->
-					<!-- text: "use off target", -->
-					<!-- theme: "secondary", -->
-					<!-- autohide: true, -->
-					<!-- interval: 1000 -->
-				  <!-- }); -->
-			console.log("use off target");
-			setFireCPU();
-			}
+		} else {
+		my_toast("use off target");
+		drawPast( id_canvas );
+		document.getElementById("pc").style.pointerEvents = "none";
+		// console.log("use off target");
+		setTimeout ( function(){ setFireCPU() }, 1500 );
+		}
 	}
 	
 	function setFireCPU() {
 		
+		var cell_field;			
+		var use_ship = JSON.parse( window.atob( document.getElementById('use_ship').innerText ) );
+		var map_fire = JSON.parse( document.getElementById('cpu_map_fire').innerText );
+		
 		do {
-		
-			var cell_field;
-			var i = 0;
+			var j = 0;
+			cell_field = Math.floor(Math.random() * 100);
+			cell_field.toString().length == 1 ? cell_field = "0" + cell_field : cell_field.toString();
 			
-			var use_ship = JSON.parse( window.atob( document.getElementById('use_ship').innerText ) );
+			for ( var arg of map_fire ) {
+				arg == cell_field ? j = 1 : null;
+			}
+			map_fire.push( cell_field.toString() );
+			document.getElementById('cpu_map_fire').innerText = JSON.stringify( map_fire );
+			
+		} while ( j != 0 );
 
-			var map_fire = JSON.parse( document.getElementById('cpu_map_fire').innerText );
-			
-			do {
-				var j = 0;
-				cell_field = Math.floor(Math.random() * 100);
-				cell_field.toString().length == 1 ? cell_field = "0" + cell_field : cell_field.toString();
-				
-				for ( var arg of map_fire ) {
-					arg == cell_field ? j = 1 : null;
-				}
-				map_fire.push( cell_field.toString() );
-				document.getElementById('cpu_map_fire').innerText = JSON.stringify( map_fire );
-				
-			} while ( j != 0 );
-
-			console.log("pset_on_field_use: " + cell_field );
-			
-			var id_canvas = "use_canvas" +  cell_field;
-			
-			if ( use_ship.includes( cell_field.toString() ) ) {
-			
-				use_ship.forEach( (item, index) => {
-				  item == cell_field.toString() ? use_ship.splice( index, 1 ) : null;
-				  document.getElementById('use_ship').innerText = window.btoa( JSON.stringify( use_ship ) );
-				  document.getElementById('use').innerHTML = "USE the fleet is destroyed on " + ((10 - use_ship.length) * 10) + " %";
-				});
-				// document.getElementById( cell_field.toString() ).style.backgroundColor = "red";
-				setTimeout ( 'document.getElementById("' + cell_field.toString() + '").style.backgroundColor = "red"', 500);
-				  new Toast({
-					title: false,
-					text: "cpu exactly",
-					theme: "secondary",
-					autohide: true,
-					interval: 1000
-				  });	
-				console.log("cpu exactly");
-				i = 1;
-			} else {	
-				// setTimeout ( drawPast( id_canvas ), 5000);
-				
-				setTimeout (  my_toast() , 1500);		
-				drawPast( id_canvas );
-				console.log("cpu off target");
-				i = 0;
-			}			
-			
-		} while ( i == 1 );
+		// console.log("pset_on_field_use: " + cell_field );
 		
-		document.getElementById("pc").style.pointerEvents = "auto";
+		var id_canvas = "use_canvas" +  cell_field;
+		
+		if ( use_ship.includes( cell_field.toString() ) ) {
+		
+			use_ship.forEach( (item, index) => {
+			  item == cell_field.toString() ? use_ship.splice( index, 1 ) : null;
+			  document.getElementById('use_ship').innerText = window.btoa( JSON.stringify( use_ship ) );
+			  document.getElementById('use').innerHTML = "USE the fleet is destroyed on " + ((10 - use_ship.length) * 10) + " %";
+			});
+			
+			document.getElementById( cell_field.toString() ).style.backgroundColor = "red";
+			my_toast("cpu exactly");
+			setTimeout ( function(){ setFireCPU() }, 1500 );
+			
+			// setTimeout ( 'document.getElementById("' + cell_field.toString() + '").style.backgroundColor = "red"', 3000);
+			// console.log("cpu exactly");
+
+		} else {	
+			// setTimeout ( drawPast( id_canvas ), 5000);
+			
+			my_toast("cpu off target");		
+			drawPast( id_canvas );
+			// console.log("cpu off target");
+			document.getElementById("pc").style.pointerEvents = "auto";
+		}			
+		
 	}
 	
-	function my_toast() {
+	function my_toast(arg) {
 		new Toast({
 			title: false,
-			text: "cpu off target",
+			text: arg,
 			theme: "secondary",
 			autohide: true,
-			interval: 3000
+			interval: 1000
 		  });
 	}
 		
@@ -413,70 +378,72 @@
 	</script>
 </div>
 
-  <div style="max-width: 280px; padding: 15px; border: 1px solid #f5f5f5;">
-    <div style="margin-bottom: 0.5rem;">
-      Название заголовка:
-      <input name="toast-title" type="text" value="Заголовок" style="width: 100%;">
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      <input name="toast-without-title" type="checkbox">без заголовка
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      Текст сообщения:
-      <input name="toast-text" type="text" value="Сообщение..." style="width: 100%;">
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      Тема:
-      <select class="form-control" name="toast-theme" style="width: 100%;">
-        <option selected value="default">default</option>
-        <option value="primary">primary</option>
-        <option value="secondary">secondary</option>
-        <option value="success">success</option>
-        <option value="danger">danger</option>
-        <option value="warning">warning</option>
-        <option value="info">info</option>
-        <option value="light">light</option>
-        <option value="dark">dark</option>
-      </select>
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      <input name="toast-autohide" type="checkbox" checked>автоматически скрывать
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      Скрывать через (миллисекунд):
-      <input name="toast-interval" type="text" value="10000" style="width: 100%;">
-    </div>
-    <div style="margin-bottom: 0.5rem;">
-      <button id="add-toast" type="button" style="width: 100%;">Добавить toast</button>
-    </div>
-  </div>
+  <!-- <div style="max-width: 280px; padding: 15px; border: 1px solid #f5f5f5;"> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- Название заголовка: -->
+      <!-- <input name="toast-title" type="text" value="Заголовок" style="width: 100%;"> -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- <input name="toast-without-title" type="checkbox">без заголовка -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- Текст сообщения: -->
+      <!-- <input name="toast-text" type="text" value="Сообщение..." style="width: 100%;"> -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- Тема: -->
+      <!-- <select class="form-control" name="toast-theme" style="width: 100%;"> -->
+        <!-- <option selected value="default">default</option> -->
+        <!-- <option value="primary">primary</option> -->
+        <!-- <option value="secondary">secondary</option> -->
+        <!-- <option value="success">success</option> -->
+        <!-- <option value="danger">danger</option> -->
+        <!-- <option value="warning">warning</option> -->
+        <!-- <option value="info">info</option> -->
+        <!-- <option value="light">light</option> -->
+        <!-- <option value="dark">dark</option> -->
+      <!-- </select> -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- <input name="toast-autohide" type="checkbox" checked>автоматически скрывать -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- Скрывать через (миллисекунд): -->
+      <!-- <input name="toast-interval" type="text" value="10000" style="width: 100%;"> -->
+    <!-- </div> -->
+    <!-- <div style="margin-bottom: 0.5rem;"> -->
+      <!-- <button id="add-toast" type="button" style="width: 100%;">Добавить toast</button> -->
+    <!-- </div> -->
+  <!-- </div> -->
   
-  <script>
-    document.querySelector('[name="toast-without-title"]').onchange = (e) => {
-      document.querySelector('[name="toast-title"]').disabled = e.target.checked;
-    }
+  <!-- <script> -->
+    <!-- document.querySelector('[name="toast-without-title"]').onchange = (e) => { -->
+      <!-- document.querySelector('[name="toast-title"]').disabled = e.target.checked; -->
+    <!-- } -->
 
-    document.addEventListener('hide.toast', (e) => {
-      console.log(e.detail.target);
-    });
+    <!-- document.addEventListener('hide.toast', (e) => { -->
+      <!-- console.log(e.detail.target); -->
+    <!-- }); -->
 
-    document.querySelector('#add-toast').onclick = () => {
-      /*
-        title - название заголовка
-        text - текст сообщения
-        theme - тема
-        autohide - нужно ли автоматически скрыть всплывающее сообщение через interval миллисекунд interval - количество миллисекунд через которые необходимо скрыть сообщение
-      */
-      new Toast({
-        title: document.querySelector('[name="toast-without-title"]').checked === true ?
-          false : document.querySelector('[name="toast-title"]').value,
-        text: document.querySelector('[name="toast-text"]').value,
-        theme: document.querySelector('[name="toast-theme"] option:checked').value,
-        autohide: document.querySelector('[name="toast-autohide"]').checked,
-        interval: parseInt(document.querySelector('[name="toast-interval"]').value)
-      });
-    }
-  </script>
-  
+    <!-- document.querySelector('#add-toast').onclick = () => { -->
+      <!-- /* -->
+        <!-- title - название заголовка -->
+        <!-- text - текст сообщения -->
+        <!-- theme - тема -->
+        <!-- autohide - нужно ли автоматически скрыть всплывающее сообщение через interval миллисекунд interval - количество миллисекунд через которые необходимо скрыть сообщение -->
+      <!-- */ -->
+      <!-- new Toast({ -->
+        <!-- title: document.querySelector('[name="toast-without-title"]').checked === true ? -->
+          <!-- false : document.querySelector('[name="toast-title"]').value, -->
+        <!-- text: document.querySelector('[name="toast-text"]').value, -->
+        <!-- theme: document.querySelector('[name="toast-theme"] option:checked').value, -->
+        <!-- autohide: document.querySelector('[name="toast-autohide"]').checked, -->
+        <!-- interval: parseInt(document.querySelector('[name="toast-interval"]').value) -->
+      <!-- }); -->
+    <!-- } -->
+  <!-- </script> -->
+	<script>
+		document.getElementById("user").style.pointerEvents = "none";
+	</script>
 </body>
 </html>
