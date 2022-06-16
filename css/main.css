@@ -1,0 +1,21 @@
+	table{
+		border-collapse: collapse;
+		border-spacing: 0;
+	}
+
+	th, td {
+		width: 16px;
+		height: 16px;
+		font-size: 80%;
+		padding: 1px 1px 1px 1px;
+		margin: 1px 1px 1px 1px;
+		border: 1px solid #000;
+		cursor: crosshair;
+	}
+	canvas{
+		font-size: 80%;
+		margin: 0px 4px 0px 4px;
+		/* background:gray; */
+		/* border: none; */
+		/* cursor: crosshair; */
+	}
